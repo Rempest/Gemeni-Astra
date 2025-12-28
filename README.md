@@ -101,7 +101,7 @@ At this level, Gemini 3 effectively acts as an autonomous orbital systems engine
 ✨ Zero-Shot Repair
 Gemini 3 analyzes visual damage and generates repair actions without prior training on specific failure modes.
 
-🛰 Space-Grade Reliability
+Space-Grade Reliability
 Built on SpaceROS and FPrime, the system aligns with the stringent requirements of real orbital missions.
 
 ⚡ Latency-Optimized Intelligence
@@ -109,5 +109,5 @@ A hybrid inference model
 (local PyTorch + cloud-based Gemini 3 Flash)
 ensures immediate responses to safety-critical events.
 
-*🤖 True Autonomy*
+*True Autonomy*
 *From fault detection to repair execution, Gemini-Astra operates without human intervention.*
