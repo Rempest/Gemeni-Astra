@@ -5,7 +5,7 @@ Autonomous Multi-Agent Space Repair System**
 *Built for the Gemini 3 Global Hackathon*
 
 
-**🌌 Overview***
+**🌌 Overview**
 
 **Gemini-Astra** is a next-generation autonomous **robotic system** designed for on-orbit satellite servicing and deep-space infrastructure repair.
 
