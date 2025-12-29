@@ -12,10 +12,10 @@ def get_astral_decision(telemetry):
         response = client.models.generate_content(
             model="gemini-3-flash-preview",
             config=types.GenerateContentConfig(
-                system_instruction=(
-                    "You are the Astra satellite AI. "
-                    "Analyze telemetry and return ONLY JSON with fields: "
-                    "'status', 'action', 'priority'."
+               system_instruction=(
+                    "You are the Astra satellite AI pilot. "
+                    "Analyze telemetry and return ONLY JSON with these exact fields: "
+                    "'status' (string), 'priority_actions' (list of strings), 'risk_level' (integer 1-10)."
                 ),
                 response_mime_type="application/json"
             ),
