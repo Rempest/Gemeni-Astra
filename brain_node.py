@@ -1,58 +1,30 @@
 import os
-import google.generativeai as genai
-from PIL import Image
+import json
+from google import genai
+from google.genai import types
 
-# 1. AI Configuration
-# Replace "YOUR_API_KEY_HERE" with the key you got from Google AI Studio
-API_KEY = "YOUR_API_KEY_HERE"
-genai.configure(api_key=API_KEY)
+# Используем v1beta для доступа к экспериментальной Gemini 3
+API_KEY = os.getenv("GOOGLE_API_KEY")
+client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1beta'})
 
-def analyze_space_emergency(image_path, telemetry_data):
-    """
-    Sends visual and text data to Gemini 3 and receives a repair strategy.
-    """
-    # Using gemini-1.5-flash for low-latency robotic responses
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    
-    # Load the captured 'emergency' image
+def get_astral_decision(telemetry):
     try:
-        img = Image.open(image_path)
-    except FileNotFoundError:
-        return "Error: Image file not found. Please upload emergency.jpg"
-    
-    # Constructing the Multimodal Prompt
-    prompt = f"""
-    SYSTEM ROLE: You are the autonomous AI brain of the 'Astra' space repair robot.
-    CURRENT TELEMETRY: {telemetry_data}
-    
-    TASK: 
-    1. Analyze the provided image for structural damage.
-    2. Compare visual evidence with telemetry data.
-    3. Identify the specific failure.
-    4. Issue a precise repair command.
-    
-    OUTPUT FORMAT: Provide your answer in raw JSON format like this:
-    {{"failure": "description", "action": "specific_command", "confidence": 0.95}}
-    """
-    
-    # Generate multimodal response
-    response = model.generate_content([prompt, img])
-    return response.text
+        response = client.models.generate_content(
+            model="gemini-3-flash-preview", 
+            config=types.GenerateContentConfig(
+                system_instruction="You are the Astra satellite AI. Analyze telemetry and return ONLY JSON.",
+                response_mime_type="application/json"
+            ),
+            contents=f"Current telemetry: {telemetry}"
+        )
+        return json.loads(response.text)
+    except Exception as e:
+        return {"error": str(e)}
 
-# --- Main Logic Loop ---
 if __name__ == "__main__":
-    print("--- Astra Autonomous Brain Initialized ---")
-    
-    # Mock data for initial testing
-    mock_telemetry = "Voltage: 11.2V (DROP), Thermal: 45C, Comm_Link: Stable"
-    image_file = "emergency.jpg"
-    
-    print(f"Status: Monitoring sensors...")
-    print(f"Input: Reading {image_file} and telemetry...")
-    
-    # UNCOMMENT the lines below once you have added your API KEY and uploaded an image:
-    # result = analyze_space_emergency(image_file, mock_telemetry)
-    # print("\n[GEMINI LOGIC OUTPUT]:")
-    # print(result)
-    
-    print("\nStatus: Ready for SpaceROS integration.")
+    # Тестовая аварийная ситуация
+    test_telemetry = "Critical: Oxygen level dropping, Power: 12%, Orientation: Unstable"
+    print("Connecting to Gemini 3 Core...")
+    decision = get_astral_decision(test_telemetry)
+    print("\n--- GEMINI 3 DECISION ---")
+    print(json.dumps(decision, indent=4))
