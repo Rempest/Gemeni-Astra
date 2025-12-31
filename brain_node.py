@@ -3,20 +3,22 @@ import json
 from google import genai
 from google.genai import types
 
-# Initialize client
+# Initialize client - Direct key placement
 API_KEY = "AIzaSyA7Zsxd6gd3pWEJNFg8P2xnCRbNhfcGlyw"
 client = genai.Client(api_key=API_KEY, http_options={"api_version": "v1beta"})
+
 def get_astral_decision(telemetry):
     try:
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-2.0-flash", # Use the current stable endpoint for the demo
             config=types.GenerateContentConfig(
-               system_instruction=(
+                system_instruction=(
                     "You are the Astra satellite AI pilot. "
                     "Analyze telemetry and return ONLY JSON with these exact fields: "
                     "'status' (string), 'priority_actions' (list of strings), 'risk_level' (integer 1-10)."
                 ),
-                response_mime_type="application/json"
+                response_mime_type="application/json",
+                temperature=0.1 # Adds stability for the demo
             ),
             contents=f"Current telemetry: {telemetry}"
         )
