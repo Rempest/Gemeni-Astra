@@ -1,54 +1,67 @@
 import os
 import json
 from google import genai
-from google.genai import types
 
-# Initialize client
-API_KEY = os.getenv("GOOGLE_API_KEY")
-client = genai.Client(api_key=API_KEY, http_options={"api_version": "v1beta"})
+# Client Configuration
+# Replace 'YOUR_API_KEY_HERE' with your actual Gemini API Key
+client = genai.Client(api_key="AIzaSyA7Zsxd6gd3pWEJNFg8P2xnCRbNhfcGlyw")
 
-def get_astral_decision(telemetry):
+def run_emergency_logic():
+    print("--- Gemini Astra: Decision Engine Starting ---")
+    
+    # 1. Loading Telemetry Data
     try:
-        response = client.models.generate_content(
-            model="gemini-3-flash-preview",
-            config=types.GenerateContentConfig(
-               system_instruction=(
-                    "You are the Astra satellite AI pilot. "
-                    "Analyze telemetry and return ONLY JSON with these exact fields: "
-                    "'status' (string), 'priority_actions' (list of strings), 'risk_level' (integer 1-10)."
-                ),
-                response_mime_type="application/json"
-            ),
-            contents=f"Current telemetry: {telemetry}"
-        )
+        with open('telemetry.json', 'r') as f:
+            telemetry = json.load(f)
+        print("LOG: Telemetry data loaded successfully.")
+    except Exception as e:
+        print(f"ERROR: Failed to load telemetry file: {e}")
+        return
 
-        # Clean possible Markdown artifacts from the response
-        clean_json = (
-            response.text
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
+    # 2. Constructing System Prompt
+    # We force the model to output ONLY valid JSON for machine-to-machine communication
+    prompt = f"""
+    ROLE: Spacecraft Emergency Autonomy AI (Gemini 3 Core).
+    INPUT TELEMETRY (JSON): {json.dumps(telemetry)}
+    
+    TASK: 
+    1. Analyze the telemetry for life-support or power anomalies.
+    2. Generate a deterministic mitigation protocol.
+    3. Output ONLY a valid JSON object.
+    
+    JSON SCHEMA REQUIREMENTS:
+    - "action": (Specific mechanical or software command)
+    - "target_module": (Affected spacecraft component)
+    - "priority": (CRITICAL/HIGH/MEDIUM)
+    - "reason": (Brief engineering justification)
+    
+    OUTPUT FORMAT: Strictly JSON. No markdown formatting, no conversational text.
+    """
+
+    # 3. Executing Gemini 3 Inference
+    try:
+        print("LOG: Sending request to Gemini 3 Engine...")
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
         )
-        return json.loads(clean_json)
+        
+        # Clean response from potential Markdown code blocks
+        raw_text = response.text.strip().replace('```json', '').replace('```', '')
+        decision = json.loads(raw_text)
+        
+        # 4. Exporting Command to Output File
+        with open('command.json', 'w') as f:
+            json.dump(decision, f, indent=2)
+            
+        print("SUCCESS: Emergency protocol generated and saved to command.json")
+        print("AI DECISION OUTPUT:")
+        print(json.dumps(decision, indent=2))
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "raw_response": getattr(response, "text", "No response")
-        }
+        print(f"CRITICAL SYSTEM ERROR: {e}")
+        exit(1)
 
 if __name__ == "__main__":
-    # Test emergency scenario
-    test_telemetry = {
-        "oxygen": "dropping",
-        "power": "12%",
-        "orientation": "unstable",
-        "temp": "45C"
-    }
-
-    print("🚀 Connecting to Gemini 3 Core...")
-    decision = get_astral_decision(json.dumps(test_telemetry))
-
-    print("\n--- 🛰️ GEMINI 3 MISSION CONTROL DECISION ---")
-    print(json.dumps(decision, indent=4))
+    run_emergency_logic()
 
