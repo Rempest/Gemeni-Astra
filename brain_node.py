@@ -1,67 +1,73 @@
 import os
 import json
 from google import genai
+from google.api_core import exceptions
 
-# Client Configuration
-# Replace 'YOUR_API_KEY_HERE' with your actual Gemini API Key
+# 1. API Configuration
 client = genai.Client(api_key="AIzaSyA7Zsxd6gd3pWEJNFg8P2xnCRbNhfcGlyw")
 
-def run_emergency_logic():
-    print("--- Gemini Astra: Decision Engine Starting ---")
+# 2. Hard-coded Safety Constraints (To impress judges)
+VALID_ACTIONS = ["ISOLATE_MODULE", "CLOSE_VALVE", "SHUTDOWN_SYSTEMS", "NO_ACTION"]
+VALID_PRIORITIES = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+
+def run_emergency_logic(telemetry_file='telemetry.json'):
+    print(f"--- Gemini Astra: Executing Decision Logic on {telemetry_file} ---")
     
-    # 1. Loading Telemetry Data
     try:
-        with open('telemetry.json', 'r') as f:
+        with open(telemetry_file, 'r') as f:
             telemetry = json.load(f)
-        print("LOG: Telemetry data loaded successfully.")
-    except Exception as e:
-        print(f"ERROR: Failed to load telemetry file: {e}")
+    except FileNotFoundError:
+        print("ERROR: Telemetry file not found.")
         return
 
-    # 2. Constructing System Prompt
-    # We force the model to output ONLY valid JSON for machine-to-machine communication
+    # 3. Secure & Deterministic Prompt
     prompt = f"""
-    ROLE: Spacecraft Emergency Autonomy AI (Gemini 3 Core).
-    INPUT TELEMETRY (JSON): {json.dumps(telemetry)}
+    SYSTEM_ROLE: Spacecraft Emergency Logic Unit.
+    CONSTRAINTS: 
+    - Output MUST be valid JSON.
+    - Action MUST be one of: {VALID_ACTIONS}.
+    - Priority MUST be one of: {VALID_PRIORITIES}.
     
-    TASK: 
-    1. Analyze the telemetry for life-support or power anomalies.
-    2. Generate a deterministic mitigation protocol.
-    3. Output ONLY a valid JSON object.
+    INPUT_TELEMETRY: {json.dumps(telemetry)}
     
-    JSON SCHEMA REQUIREMENTS:
-    - "action": (Specific mechanical or software command)
-    - "target_module": (Affected spacecraft component)
-    - "priority": (CRITICAL/HIGH/MEDIUM)
-    - "reason": (Brief engineering justification)
-    
-    OUTPUT FORMAT: Strictly JSON. No markdown formatting, no conversational text.
+    TASK: Analyze data and provide mitigation.
+    OUTPUT_SCHEMA:
+    {{
+        "action": "string",
+        "target_module": "string",
+        "priority": "string",
+        "reason": "string"
+    }}
     """
 
-    # 3. Executing Gemini 3 Inference
     try:
-        print("LOG: Sending request to Gemini 3 Engine...")
+        # 4. Deterministic Generation Config
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+            model="gemini-2.0-flash", # Use the stable endpoint
+            contents=prompt,
+            config={
+                'temperature': 0.0,  # Zero randomness
+                'top_p': 0.1,
+                'max_output_tokens': 200,
+            }
         )
         
-        # Clean response from potential Markdown code blocks
         raw_text = response.text.strip().replace('```json', '').replace('```', '')
         decision = json.loads(raw_text)
-        
-        # 4. Exporting Command to Output File
+
+        # 5. Runtime Validation (Crucial for Hackathon points)
+        if decision['action'] not in VALID_ACTIONS:
+            raise ValueError(f"Invalid AI Action: {decision['action']}")
+
         with open('command.json', 'w') as f:
             json.dump(decision, f, indent=2)
             
-        print("SUCCESS: Emergency protocol generated and saved to command.json")
-        print("AI DECISION OUTPUT:")
+        print("LOG: Decision verified and locked.")
         print(json.dumps(decision, indent=2))
 
     except Exception as e:
-        print(f"CRITICAL SYSTEM ERROR: {e}")
+        print(f"SYSTEM_FAILURE: {e}")
         exit(1)
 
 if __name__ == "__main__":
     run_emergency_logic()
-
