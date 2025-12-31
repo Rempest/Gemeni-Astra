@@ -1,73 +1,53 @@
 import os
 import json
 from google import genai
-from google.api_core import exceptions
+from google.genai import types
 
-# 1. API Configuration
-client = genai.Client(api_key="AIzaSyA7Zsxd6gd3pWEJNFg8P2xnCRbNhfcGlyw")
-
-# 2. Hard-coded Safety Constraints (To impress judges)
-VALID_ACTIONS = ["ISOLATE_MODULE", "CLOSE_VALVE", "SHUTDOWN_SYSTEMS", "NO_ACTION"]
-VALID_PRIORITIES = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
-
-def run_emergency_logic(telemetry_file='telemetry.json'):
-    print(f"--- Gemini Astra: Executing Decision Logic on {telemetry_file} ---")
-    
+# Initialize client
+API_KEY = "AIzaSyA7Zsxd6gd3pWEJNFg8P2xnCRbNhfcGlyw"
+client = genai.Client(api_key=API_KEY, http_options={"api_version": "v1beta"})
+def get_astral_decision(telemetry):
     try:
-        with open(telemetry_file, 'r') as f:
-            telemetry = json.load(f)
-    except FileNotFoundError:
-        print("ERROR: Telemetry file not found.")
-        return
-
-    # 3. Secure & Deterministic Prompt
-    prompt = f"""
-    SYSTEM_ROLE: Spacecraft Emergency Logic Unit.
-    CONSTRAINTS: 
-    - Output MUST be valid JSON.
-    - Action MUST be one of: {VALID_ACTIONS}.
-    - Priority MUST be one of: {VALID_PRIORITIES}.
-    
-    INPUT_TELEMETRY: {json.dumps(telemetry)}
-    
-    TASK: Analyze data and provide mitigation.
-    OUTPUT_SCHEMA:
-    {{
-        "action": "string",
-        "target_module": "string",
-        "priority": "string",
-        "reason": "string"
-    }}
-    """
-
-    try:
-        # 4. Deterministic Generation Config
         response = client.models.generate_content(
-            model="gemini-2.0-flash", # Use the stable endpoint
-            contents=prompt,
-            config={
-                'temperature': 0.0,  # Zero randomness
-                'top_p': 0.1,
-                'max_output_tokens': 200,
-            }
+            model="gemini-3-flash-preview",
+            config=types.GenerateContentConfig(
+               system_instruction=(
+                    "You are the Astra satellite AI pilot. "
+                    "Analyze telemetry and return ONLY JSON with these exact fields: "
+                    "'status' (string), 'priority_actions' (list of strings), 'risk_level' (integer 1-10)."
+                ),
+                response_mime_type="application/json"
+            ),
+            contents=f"Current telemetry: {telemetry}"
         )
-        
-        raw_text = response.text.strip().replace('```json', '').replace('```', '')
-        decision = json.loads(raw_text)
 
-        # 5. Runtime Validation (Crucial for Hackathon points)
-        if decision['action'] not in VALID_ACTIONS:
-            raise ValueError(f"Invalid AI Action: {decision['action']}")
-
-        with open('command.json', 'w') as f:
-            json.dump(decision, f, indent=2)
-            
-        print("LOG: Decision verified and locked.")
-        print(json.dumps(decision, indent=2))
+        # Clean possible Markdown artifacts from the response
+        clean_json = (
+            response.text
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+        return json.loads(clean_json)
 
     except Exception as e:
-        print(f"SYSTEM_FAILURE: {e}")
-        exit(1)
+        return {
+            "error": str(e),
+            "raw_response": getattr(response, "text", "No response")
+        }
 
 if __name__ == "__main__":
-    run_emergency_logic()
+    # Test emergency scenario
+    test_telemetry = {
+        "oxygen": "dropping",
+        "power": "12%",
+        "orientation": "unstable",
+        "temp": "45C"
+    }
+
+    print("🚀 Connecting to Gemini 3 Core...")
+    decision = get_astral_decision(json.dumps(test_telemetry))
+
+    print("\n--- 🛰️ GEMINI 3 MISSION CONTROL DECISION ---")
+    print(json.dumps(decision, indent=4))
+
