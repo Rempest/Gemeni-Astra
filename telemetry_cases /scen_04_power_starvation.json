@@ -3,5 +3,8 @@
   "internal_pressure": 0.99,
   "battery_voltage": 11.2,
   "cpu_temp": 31.0,
-  "external_radiation": 0.01
+  "external_radiation": 0.01,
+  "leak_detected": false,
+  "solar_flare_detected": false,
+  "life_support_warning": true
 }
