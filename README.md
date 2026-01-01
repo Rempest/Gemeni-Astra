@@ -18,14 +18,19 @@ The system follows the OODA Loop (Observe → Orient → Decide → Act), a deci
 *Logic Flow (OODA Loop)
 Telemetry (telemetry.json)
         ↓
+        
 Observe: Data Ingestion
         ↓
+        
 Orient: AI Reasoning (Gemini 2.0 Flash)
         ↓
+        
 Decide: Deterministic Command Generation
         ↓
+        
 Act: Command Output (command.json)
         ↓
+        
 Visualize: Mission Dashboard (Streamlit)*
 
 **Components**
