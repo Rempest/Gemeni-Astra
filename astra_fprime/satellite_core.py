@@ -1,64 +1,60 @@
-import time
-import json
-import sys
-import os
+#!/usr/bin/env python3
+"""
+NASA F' Component Simulation for Gemini-Astra
+Executes AI-generated commands from brain_node.py.
+"""
 
-# Adding the root directory to path so we can import brain_node
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import json
+import time
+import os
 
 class AstraFPrimeComponent:
     """
-    NASA F' Component Simulation for Astra Satellite Flight Software.
-    This module handles hardware-level execution of AI-generated commands.
+    Simulates hardware execution of AI-generated commands.
     """
-    
+
     def __init__(self):
-        self.energy_level = 12
+        self.energy_level = 100
         self.oxygen_system = "STANDBY"
         self.thrusters = "OFF"
         self.status_log = []
 
-    def execute_commands(self, ai_decision):
-        print(f"\n[F' Core] Commands received from Gemini 3 (Mission Status: {ai_decision.get('status', 'UNKNOWN')})")
-        
-        # In F' architecture, these would be Port Invocations
-        actions = ai_decision.get('priority_actions', [])
-        
+    def execute_commands(self, command_file="command.json"):
+        if not os.path.exists(command_file):
+            print(f"❌ [F' Core] Command file {command_file} not found")
+            return
+
+        with open(command_file, "r") as f:
+            ai_decision = json.load(f)
+
+        print(f"\n[F' Core] Commands received from Gemini AI (Status: {ai_decision.get('status','UNKNOWN')})")
+        actions = ai_decision.get("priority_actions", [])
+
         for action in actions:
-            time.sleep(1)  # Simulate hardware latency
+            time.sleep(1)  # simulate hardware latency
             action_lower = action.lower()
-            
             if "oxygen" in action_lower:
                 self.oxygen_system = "ACTIVE"
-                execution_msg = f"EXECUTED: {action} -> Life Support: {self.oxygen_system}"
+                msg = f"EXECUTED: {action} -> Life Support: {self.oxygen_system}"
             elif "power" in action_lower or "low-power" in action_lower:
-                execution_msg = f"EXECUTED: {action} -> Power Grid: Optimized for survival"
+                self.energy_level = max(self.energy_level - 10, 0)
+                msg = f"EXECUTED: {action} -> Energy Level: {self.energy_level}%"
             elif "thrusters" in action_lower or "orientation" in action_lower:
                 self.thrusters = "STABILIZING"
-                execution_msg = f"EXECUTED: {action} -> RCS Thrusters: {self.thrusters}"
+                msg = f"EXECUTED: {action} -> Thrusters: {self.thrusters}"
             else:
-                execution_msg = f"EXECUTED: {action} -> General system update"
-                
-            print(f"✔️ {execution_msg}")
-            self.status_log.append(execution_msg)
+                msg = f"EXECUTED: {action} -> General system update"
+            print(f"✔️ {msg}")
+            self.status_log.append(msg)
+
+        print("\n[F' Core] Mission Execution Complete.\n")
 
 if __name__ == "__main__":
-    try:
-        from brain_node import get_astral_decision
-    except ImportError:
-        print("Error: Could not find brain_node.py. Make sure it is in the root directory.")
-        sys.exit(1)
-    
-    # 1. Simulate Raw Telemetry Data (SpaceROS-compliant format)
-    raw_telemetry = "Power 12%, Oxygen dropping, Orientation Unstable"
-    print(f"📡 Telemetry Stream: {raw_telemetry}")
-    
-    # 2. Reasoning Layer (Gemini 3 Core)
-    print("🧠 Gemini 3 is thinking...")
-    decision = get_astral_decision(raw_telemetry)
-    
-    # 3. Flight Software Execution Layer (F' Logic)
-    satellite = AstraFPrimeComponent()
-    satellite.execute_commands(decision)
-    
-    print("\n🚀 Mission status updated successfully.")
+    # Auto-load latest command.json if exists
+    fprime = AstraFPrimeComponent()
+    command_file = "command.json"
+    if os.path.exists(command_file):
+        fprime.execute_commands(command_file)
+    else:
+        print("⚠️ [F' Core] No command.json found. Run brain_node.py first or use ros_node.py pipeline.")
+
