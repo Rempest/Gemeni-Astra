@@ -15,7 +15,7 @@ The system follows the OODA Loop (Observe → Orient → Decide → Act), a deci
 **It is designed as an AI pilot operating under strict constraints, deterministic outputs, and safety validation.*
 
 **Architecture**
-*Logic Flow (OODA Loop)
+Logic Flow (OODA Loop)
 Telemetry (telemetry.json)
         ↓
         
@@ -31,7 +31,7 @@ Decide: Deterministic Command Generation
 Act: Command Output (command.json)
         ↓
         
-Visualize: Mission Dashboard (Streamlit)*
+Visualize: Mission Dashboard (Streamlit)
 
 **Components**
 **1. Data Ingestion**
