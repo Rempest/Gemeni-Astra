@@ -131,7 +131,7 @@ Set your Google API key:
 export GOOGLE_API_KEY=your_api_key_here
 
 **4. Run AI decision engine**
-python brain_node.py
+python3 brain_node.py
 
 
 
