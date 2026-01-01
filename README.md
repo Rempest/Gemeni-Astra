@@ -3,111 +3,198 @@
 Autonomous Multi-Agent Space Repair System**
 ![WhatsApp Image 2025-12-29 at 22 47 34](https://github.com/user-attachments/assets/3896abd1-8803-4405-961c-f633e5e53a4a)
 *Built for the Gemini 3 Global Hackathon*
+**Overview**
+
+Gemini-Astra is an autonomous decision-making system designed for spacecraft and satellite operations.
+It analyzes raw telemetry data, evaluates system risks using Google Gemini 2.0 Flash, and produces deterministic, machine-readable commands suitable for direct integration with robotic or flight software.
+
+The system follows the OODA Loop (Observe → Orient → Decide → Act), a decision-making model widely used in aerospace and defense systems.
+
+**Gemini-Astra is not a chatbot.**
+**It is designed as an AI pilot operating under strict constraints, deterministic outputs, and safety validation.*
+
+**Architecture**
+*Logic Flow (OODA Loop)
+Telemetry (telemetry.json)
+        ↓
+Observe: Data Ingestion
+        ↓
+Orient: AI Reasoning (Gemini 2.0 Flash)
+        ↓
+Decide: Deterministic Command Generation
+        ↓
+Act: Command Output (command.json)
+        ↓
+Visualize: Mission Dashboard (Streamlit)*
+
+**Components**
+**1. Data Ingestion**
+
+Input: telemetry.json
+
+Simulated satellite telemetry (battery level, oxygen, subsystem status, fault flags)
+
+Designed to mirror real spacecraft sensor streams
+
+**2. AI Reasoning Core**
+
+Implemented in brain_node.py
+
+Uses google-genai SDK with Gemini 2.0 Flash
+
+Deterministic configuration:
+
+temperature = 0
+
+Gemini evaluates:
+
+anomaly type
+
+risk level
+
+recommended action
+
+priority
+
+**3. Safety & Deterministic Output**
+
+AI output is strict JSON only
+
+Commands are validated against a predefined whitelist:
+
+*VALID_ACTIONS = [
+    "ISOLATE_MODULE",
+    "CLOSE_VALVE",
+    "REDUCE_POWER",
+    "REBOOT_SUBSYSTEM",
+    "NO_ACTION"
+]*
 
 
-**🌌 Overview**
+This safety layer prevents hallucinated or unsafe commands and makes the system compatible with real robotic controllers.
 
-**Gemini-Astra** is a next-generation autonomous **robotic system** designed for on-orbit satellite servicing and deep-space infrastructure repair.
+**4. Interface & Monitoring**
 
-*The project combines:*
+dashboard.py built with Streamlit
 
-Gemini 3’s multimodal reasoning,
+**Displays:**
 
-the mission-critical reliability of **NASA F’ (FPrime)**, and
+live telemetry
 
-the space-hardened robotics framework **SpaceROS**.
+detected anomalies
 
-Together, these components enable an intelligent robotic agent capable of detecting failures, reasoning about novel situations, and executing repairs autonomously, significantly reducing dependence on ground control and communication latency.
+AI decisions
 
-**The Problem**
+priority levels
 
-Most existing space robotic systems rely on rigid, pre-programmed logic.
-When failures occur outside expected scenarios, missions require:
+Intended for mission operators on the ground
 
-*manual analysis from Earth*
+**Technical Stack**
 
-*long communication delays*
+**Language:** Python 3.12
 
-*increased operational risk*
+**AI Model:** Google Gemini 3
 
-This approach does not scale to autonomous or long-duration missions.
+**AI SDK:** google-genai
 
-**Gemini-Astra addresses this limitation by introducing a cognitive layer that can:**
+**Decision Model:** Deterministic LLM reasoning (temperature = 0)
 
-*interpret visual data,*
+**UI:** Streamlit
 
-*analyze system telemetry,*
+**Design Pattern:** OODA Loop
 
-*and plan corrective actions in real time.*
+**Target Integration:** ROS 2, SpaceROS, robotic actuation systems
 
-**Technology Stack**
+**Design Rationale**
 
-AI Core: **Gemini 3 API**
-Multimodal reasoning, high-level planning, autonomous decision-making
+**Low Latency**: Gemini is selected for time-critical decision-making in space environments.
 
-Computer Vision: **PyTorch + OpenCV**
-On-device anomaly and damage detection
+**Safety First**: Hard validation of AI outputs ensures compatibility with autonomous systems.
 
-Mission Framework: **NASA FPrime (F’)**
-System health monitoring, telemetry, and fault management
+**Explainability**: AI provides structured reasoning alongside commands.
 
-Robotics Platform: **SpaceROS**
-Space-hardened ROS 2 distribution for flight-critical applications
+**Scalability**: Architecture is ready for integration with ROS 2 nodes and real-time telemetry streams.
 
-Real-Time Control: **FreeRTOS + ros2_control**
-Deterministic, safety-critical actuator execution
+**Quick Start**
+**1. Clone the repository**
+git clone https://github.com/Rempest/Gemeni-Astra.git
+cd Gemeni-Astra
 
-Manipulation & Motion Planning: **MoveIt 2**
-Kinematics, collision checking, and repair trajectory planning
+**2. Install dependencies**
+pip install -r requirements.txt
 
-Navigation & Localization: **SLAM Toolbox / Nav2**
-Spatial awareness and robot mobility
+**3. Configure Gemini API**
 
-Development Environment: **Docker + GitHub Codespaces**
-Cloud-native, reproducible development workflow
+Set your Google API key:
 
-**System Architecture**
+export GOOGLE_API_KEY=your_api_key_here
 
-Gemini-Astra follows a three-layer cognitive architecture designed to balance safety, responsiveness, and intelligent autonomy.
+**4. Run AI decision engine**
+python brain_node.py
 
-1️⃣ **Reflective Layer (FreeRTOS / FPrime)**
 
-Microsecond-level safety loops
 
-Hardware health monitoring
+**This will:**
 
-Fault isolation and recovery
+read telemetry.json
 
-2️⃣ **Reactive Layer (SpaceROS / PyTorch)**
+analyze telemetry with Gemini
 
-Local perception and anomaly response
+generate command.json
 
-Obstacle avoidance and real-time execution
+**5. Launch the dashboard**
+streamlit run dashboard.py
 
-Manipulation and motion control
+**Example Output**
 
-3️⃣ **Deliberative Layer (Gemini 3)**
+Input: telemetry.json
 
-Multimodal analysis (vision + telemetry)
+{
+  "battery_level": 18,
+  "oxygen_pressure": 92,
+  "thermal_status": "nominal",
+  "solar_panel_actuator": "fault"
+}
 
-Fault diagnosis and reasoning
 
-High-level repair strategy planning
+Output: command.json
 
-At this level, Gemini 3 effectively acts as an autonomous orbital systems engineer.
+{
+  "action": "ISOLATE_MODULE",
+  "target": "solar_panel_actuator",
+  "priority": "HIGH",
+  "confidence": 0.91
+}
 
-**🌟 Key Features**
+**Key Features**
 
-✨ Zero-Shot Repair
-Gemini 3 analyzes visual damage and generates repair actions without prior training on specific failure modes.
+Autonomous AI decision-making (no human-in-the-loop)
 
-Space-Grade Reliability
-Built on SpaceROS and FPrime, the system aligns with the stringent requirements of real orbital missions.
+Deterministic and validated command output
 
-⚡ Latency-Optimized Intelligence
-A hybrid inference model
-(local PyTorch + cloud-based Gemini 3 Flash)
-ensures immediate responses to safety-critical events.
+Low-latency reasoning using Gemini
 
-*True Autonomy*
-*From fault detection to repair execution, Gemini-Astra operates without human intervention.*
+Safety layer against AI hallucinations
+
+Real-time monitoring dashboard
+
+Designed for aerospace and robotic systems
+
+**Future Roadmap**
+
+🔹 ROS 2 integration (command publisher nodes)
+
+🔹 SpaceROS compatibility for flight-grade software
+
+🔹 MoveIt2 integration for robotic repair and manipulation
+
+🔹 Real-time telemetry streaming (DDS)
+
+🔹 Hardware-in-the-loop simulation
+
+🔹 Fault injection testing and certification-ready pipelines
+
+**Disclaimer**
+
+This project is a prototype developed for a hackathon environment.
+It is not flight-certified software but is architected with real aerospace constraints in mind.
