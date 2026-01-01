@@ -1,0 +1,10 @@
+{
+  "oxygen_level": 17.2,
+  "internal_pressure": 0.75,
+  "battery_voltage": 15.0,
+  "cpu_temp": 70.0,
+  "external_radiation": 8.0,
+  "leak_detected": true,
+  "solar_flare_detected": true,
+  "life_support_warning": true
+}
