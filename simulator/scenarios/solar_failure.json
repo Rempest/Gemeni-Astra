@@ -1,0 +1,38 @@
+{
+  "mission_info": {
+    "satellite_id": "ASTRA-01",
+    "orbit": "LEO",
+    "scenario_name": "Solar Panel Degradation",
+    "mission_time_minutes": 12450
+  },
+
+  "telemetry": {
+    "timestamp": "2026-01-02T12:00:00Z",
+    "power_output": 45.5,
+    "battery_charge": 62,
+    "panel_temperature": 95.0,
+    "status": "CRITICAL",
+    "subsystems": {
+      "camera": "OPERATIONAL",
+      "thermal_control": "OPERATIONAL",
+      "propulsion": "IDLE"
+    }
+  },
+
+  "visual_data": {
+    "camera_check": "Micro-meteorite impact detected on Section-B of solar array",
+    "light_sensor": "INCONSISTENT"
+  },
+
+  "constraints": {
+    "max_panel_temperature": 80,
+    "min_power_output": 60,
+    "min_battery_charge": 40
+  },
+
+  "expected_outcome": {
+    "target_panel_temperature": "<= 75",
+    "target_power_output": ">= 65",
+    "mission_status": "STABLE"
+  }
+}
