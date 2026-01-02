@@ -1,0 +1,71 @@
+{
+  "mission_info": {
+    "satellite_id": "ASTRA-01",
+    "orbit": "LEO",
+    "scenario_name": "Main Processor Thermal Overheat",
+    "mission_time_minutes": 12455
+  },
+
+  "failure": {
+    "type": "THERMAL_OVERHEAT",
+    "suspected_root_cause": "COOLING_FAN_STALL",
+    "severity": "HIGH",
+    "confidence": 0.92
+  },
+
+  "telemetry": {
+    "timestamp": "2026-01-02T12:05:00Z",
+    "power_output": 92.0,
+    "battery_charge": 88,
+
+    "thermal": {
+      "cpu_temperature": 102.5,
+      "gpu_temperature": 85.0,
+      "board_temperature": 78.0
+    },
+
+    "cooling": {
+      "fan_speed_rpm": 0,
+      "fan_status": "STALLED"
+    },
+
+    "status": "WARNING",
+
+    "subsystems": {
+      "camera": "OPERATIONAL",
+      "data_transmitter": "BUSY",
+      "memory_bank": "STABLE"
+    }
+  },
+
+  "error_logs": [
+    {
+      "code": "COOLING_FAN_STALL",
+      "level": "ERROR",
+      "description": "Cooling fan not responding to control signals"
+    },
+    {
+      "code": "CPU_THROTTLING",
+      "level": "WARNING",
+      "description": "CPU frequency throttling applied to limit heat generation"
+    }
+  ],
+
+  "visual_data": {
+    "thermal_camera": "Hotspot detected in central processing unit area"
+  },
+
+  "constraints": {
+    "max_cpu_temperature": 85,
+    "max_gpu_temperature": 80,
+    "max_board_temperature": 70,
+    "min_battery_charge": 40
+  },
+
+  "expected_outcome": {
+    "target_cpu_temperature": "<= 75",
+    "target_gpu_temperature": "<= 70",
+    "system_mode": "DEGRADED_SAFE",
+    "mission_status": "STABLE"
+  }
+}
