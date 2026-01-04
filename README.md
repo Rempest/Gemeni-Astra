@@ -1,89 +1,113 @@
-# Gemeni-Astra
-**🚀 Gemini-Astra
-Autonomous Multi-Agent Space Repair System**
+# 🚀 Gemini-Astra  
+### Autonomous AI Decision Core for Spacecraft & Satellite Operations  
+**Built for the Google Gemini 3 Global Hackathon**
+
 ![WhatsApp Image 2025-12-29 at 22 47 34](https://github.com/user-attachments/assets/3896abd1-8803-4405-961c-f633e5e53a4a)
-*Built for the Gemini 3 Global Hackathon*
 
-**Overview**
+## 🚨 Problem
 
-Gemini-Astra is an autonomous decision-making system designed for spacecraft and satellite operations.
-It analyzes raw telemetry data, evaluates system risks using Google Gemini 2.0 Flash, and produces deterministic, machine-readable commands suitable for direct integration with robotic or flight software.
+Spacecraft and satellites must often operate without real-time communication with Earth.  
+In critical situations, delayed or incorrect decisions can lead to mission failure.
 
-The system follows the OODA Loop (Observe → Orient → Decide → Act), a decision-making model widely used in aerospace and defense systems.
+Traditional autonomy systems are rigid, while modern AI systems are often unsafe for direct control.
 
-**Gemini-Astra is not a chatbot.**
-**It is designed as an AI pilot operating under strict constraints, deterministic outputs, and safety validation.*
+**The challenge:**  
+How can an AI system make autonomous decisions in space **while remaining deterministic, explainable, and safe**?
 
-**Architecture**
-Logic Flow (OODA Loop)
+
+## 💡 Solution
+
+**Gemini-Astra** is an autonomous AI decision-making system designed for spacecraft and satellite operations.
+
+It analyzes raw telemetry data, reasons using **Google Gemini 3**, and produces **strict, machine-readable commands** that are safe for direct integration with robotic or flight software.
+
+> Gemini-Astra is **not a chatbot**.  
+> It is designed as an **AI pilot operating under strict constraints, deterministic outputs, and safety validation**.
+
+
+## 🤖 Why Gemini 3?
+
+Gemini 3 is used **not as a text generator**, but as a **deterministic reasoning engine**.
+
+Gemini 3 enables:
+- Multimodal reasoning over complex telemetry data
+- Low-latency inference for time-critical decisions
+- Structured, machine-readable outputs (JSON only)
+- Deterministic behavior required for safety-critical systems
+
+This makes Gemini 3 suitable for **autonomous aerospace decision-making**, not just conversational AI.
+
+
+## 🧠 System Architecture (OODA Loop)
+
+Gemini-Astra follows the **OODA Loop** (Observe → Orient → Decide → Act),  
+a decision-making model widely used in aerospace and defense systems.
+
 Telemetry (telemetry.json)
-        ↓
-        
+↓
 Observe: Data Ingestion
-        ↓
-        
-Orient: AI Reasoning (Gemini 2.0 Flash)
-        ↓
-        
+↓
+Orient: AI Reasoning (Gemini 3)
+↓
 Decide: Deterministic Command Generation
-        ↓
-        
-Act: Command Output (command.json)
-        ↓
-        
+↓
+Act: Validated Command Output (command.json)
+↓
 Visualize: Mission Dashboard (Streamlit)
 
-**Components**
-**1. Data Ingestion**
 
-Input: telemetry.json
+## 🧩 Core Components
 
-Simulated satellite telemetry (battery level, oxygen, subsystem status, fault flags)
+### 1️⃣ Data Ingestion
+- **Input:** `telemetry.json`
+- Simulated satellite telemetry:
+  - battery level
+  - oxygen pressure
+  - subsystem status
+  - fault flags
+- Designed to mirror real spacecraft sensor streams
 
-Designed to mirror real spacecraft sensor streams
 
-**2. AI Reasoning Core**
-
-Implemented in brain_node.py
-
-Uses google-genai SDK with Gemini 2.0 Flash
-
-Deterministic configuration:
-
-temperature = 0
+### 2️⃣ AI Reasoning Core
+- Implemented in `brain_node.py`
+- Uses `google-genai` SDK with **Gemini 3**
+- Deterministic configuration:
+  - `temperature = 0`
 
 Gemini evaluates:
-
-anomaly type
-
-risk level
-
-recommended action
-
-priority
-
-**3. Safety & Deterministic Output**
-
-AI output is strict JSON only
-
-Commands are validated against a predefined whitelist:
-
-*VALID_ACTIONS = [
-    "ISOLATE_MODULE",
-    "CLOSE_VALVE",
-    "REDUCE_POWER",
-    "REBOOT_SUBSYSTEM",
-    "NO_ACTION"
-]*
+- anomaly type
+- risk level
+- recommended action
+- priority
 
 
-This safety layer prevents hallucinated or unsafe commands and makes the system compatible with real robotic controllers.
+### 3️⃣ Safety & Deterministic Output
+- AI output format: **strict JSON only**
+- All commands are validated against a predefined whitelist:
 
-**4. Interface & Monitoring**
+```python
+VALID_ACTIONS = [
+  "ISOLATE_MODULE",
+  "CLOSE_VALVE",
+  "REDUCE_POWER",
+  "REBOOT_SUBSYSTEM",
+  "NO_ACTION"
+]
+```
+
+This safety layer:
+
+prevents hallucinated or unsafe commands
+
+guarantees compatibility with real robotic controllers
+
+enforces human-designed operational constraints
+
+### 4️⃣ Interface & Monitoring
 
 dashboard.py built with Streamlit
 
-**Displays:**
+Displays:
 
 live telemetry
 
@@ -93,68 +117,12 @@ AI decisions
 
 priority levels
 
-Intended for mission operators on the ground
-
-**Technical Stack**
-
-**Language:** Python 3.12
-
-**AI Model:** Google Gemini 3
-
-**AI SDK:** google-genai
-
-**Decision Model:** Deterministic LLM reasoning (temperature = 0)
-
-**UI:** Streamlit
-
-**Design Pattern:** OODA Loop
-
-**Target Integration:** ROS 2, SpaceROS, robotic actuation systems
-
-**Design Rationale**
-
-**Low Latency**: Gemini is selected for time-critical decision-making in space environments.
-
-**Safety First**: Hard validation of AI outputs ensures compatibility with autonomous systems.
-
-**Explainability**: AI provides structured reasoning alongside commands.
-
-**Scalability**: Architecture is ready for integration with ROS 2 nodes and real-time telemetry streams.
-
-**Quick Start**
-**1. Clone the repository**
-git clone https://github.com/Rempest/Gemeni-Astra.git
-cd Gemeni-Astra
-
-**2. Install dependencies**
-pip install -r requirements.txt
-
-**3. Configure Gemini API**
-
-Set your Google API key:
-
-export GOOGLE_API_KEY=your_api_key_here
-
-**4. Run AI decision engine**
-python3 brain_node.py
+Designed for mission operators and system monitoring.
 
 
+###Example Scenario
 
-**This will:**
-
-read telemetry.json
-
-analyze telemetry with Gemini
-
-generate command.json
-
-**5. Launch the dashboard**
-streamlit run dashboard.py
-
-**Example Output**
-
-Input: telemetry.json
-
+Input – telemetry.json
 {
   "battery_level": 18,
   "oxygen_pressure": 92,
@@ -163,8 +131,7 @@ Input: telemetry.json
 }
 
 
-Output: command.json
-
+Output – command.json
 {
   "action": "ISOLATE_MODULE",
   "target": "solar_panel_actuator",
@@ -172,27 +139,42 @@ Output: command.json
   "confidence": 0.91
 }
 
-**Key Features**
+This demonstrates autonomous anomaly detection, reasoning, and safe decision output.
 
-Autonomous AI decision-making (no human-in-the-loop)
+## Technical Stack
 
-Deterministic and validated command output
+Language: Python 3.12
 
-Low-latency reasoning using Gemini
+AI Model: Google Gemini 3
 
-Safety layer against AI hallucinations
+AI SDK: google-genai
 
-Real-time monitoring dashboard
+Decision Model: Deterministic LLM reasoning (temperature = 0)
 
-Designed for aerospace and robotic systems
+UI: Streamlit
 
-**Future Roadmap**
+Design Pattern: OODA Loop
+
+Target Integration: ROS 2, SpaceROS, robotic actuation systems
+
+
+## Design Rationale
+
+Low Latency: Gemini 3 enables fast decision-making for space environments
+
+Safety First: Hard validation of AI outputs prevents unsafe behavior
+
+Explainability: Structured reasoning accompanies every decision
+
+Scalability: Architecture is designed for ROS 2 nodes and real-time telemetry
+
+### 🚀 Future Roadmap
 
 🔹 ROS 2 integration (command publisher nodes)
 
 🔹 SpaceROS compatibility for flight-grade software
 
-🔹 MoveIt2 integration for robotic repair and manipulation
+🔹 MoveIt 2 integration for robotic repair and manipulation
 
 🔹 Real-time telemetry streaming (DDS)
 
@@ -200,7 +182,9 @@ Designed for aerospace and robotic systems
 
 🔹 Fault injection testing and certification-ready pipelines
 
-**Disclaimer**
+## ⚠️ Disclaimer
 
-This project is a prototype developed for a hackathon environment.
-It is not flight-certified software but is architected with real aerospace constraints in mind.
+This project is a *prototype developed for a hackathon environment.*
+
+It is not *flight-certified software*, but it is architected with real aerospace constraints, safety considerations, and autonomous system principles in mind.
+
