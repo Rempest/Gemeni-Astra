@@ -155,7 +155,7 @@ UI: Streamlit
 
 Design Pattern: OODA Loop
 
-Target Integration: ROS 2, SpaceROS, robotic actuation systems
+Target Integration: ROS 2, SpaceROS, Fprime, robotic actuation systems
 
 
 ## Design Rationale
