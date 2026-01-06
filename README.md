@@ -168,6 +168,44 @@ Explainability: Structured reasoning accompanies every decision
 
 Scalability: Architecture is designed for ROS 2 nodes and real-time telemetry
 
+### How to Run (Local / GitHub Codespaces)
+Follow these steps to deploy and test the autonomous mission logic:
+
+**1️⃣ Clone the Repository**
+
+```
+git clone https://github.com/Rempest/Gemeni-Astra.git
+cd Gemeni-Astra
+```
+**2️⃣ Install Dependencies We use a lightweight set of libraries to ensure compatibility across all environments.**
+```
+pip install streamlit pandas google-genai --break-system-packages
+```
+**3️⃣ Configure Authentication Obtain your API key from Google AI Studio and set it as an environment variable.**
+```
+export GOOGLE_API_KEY="YOUR_ACTUAL_API_KEY"
+```
+
+**4️⃣ Execute the Autonomous Mission Loop Run the primary entry point to start the Sense-Think-Act cycle.**
+```
+python3 run_mission.py
+What happens: The system loads satellite scenarios, analyzes telemetry via Gemini 3, executes recovery actions in the Logical Simulator, and validates safety constraints.
+```
+
+**5️⃣ Review Mission Artifacts After execution, the system generates industrial-grade reports in the root directory:**
+
+**_mission_log.json:* A full time-stamped timeline of every AI decision.
+
+**_mission_summary.json:* A high-level executive summary for mission controllers (judges).
+
+
+**6️⃣ Launch the Visual Dashboard (Optional) To visualize the telemetry data and AI reasoning in a web interface:**
+```
+streamlit run dashboard.py
+Note: In Codespaces, go to the Ports tab and click the globe icon for port 8501.
+```
+
+
 ### 🚀 Future Roadmap
 
 🔹 ROS 2 integration (command publisher nodes)
