@@ -189,8 +189,9 @@ export GOOGLE_API_KEY="YOUR_ACTUAL_API_KEY"
 **4️⃣ Execute the Autonomous Mission Loop Run the primary entry point to start the Sense-Think-Act cycle.**
 ```
 python3 run_mission.py
-What happens: The system loads satellite scenarios, analyzes telemetry via Gemini 3, executes recovery actions in the Logical Simulator, and validates safety constraints.
 ```
+*What happens: The system loads satellite scenarios, analyzes telemetry via Gemini 3, executes recovery actions in the Logical Simulator, and validates safety constraints.*
+
 
 **5️⃣ Review Mission Artifacts After execution, the system generates industrial-grade reports in the root directory:**
 
