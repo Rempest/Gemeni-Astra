@@ -120,7 +120,7 @@ priority levels
 Designed for mission operators and system monitoring.
 
 
-###Example Scenario
+Example Scenario
 
 Input – telemetry.json
 {
@@ -143,19 +143,19 @@ This demonstrates autonomous anomaly detection, reasoning, and safe decision out
 
 ## Technical Stack
 
-Language: Python 3.12
+**Language:** Python 3.12
 
-AI Model: Google Gemini 3
+**AI Model:** Google Gemini 3
 
-AI SDK: google-genai
+**AI SDK:** google-genai
 
-Decision Model: Deterministic LLM reasoning (temperature = 0)
+**Decision Model:** Deterministic LLM reasoning (temperature = 0)
 
-UI: Streamlit
+**UI:** Streamlit
 
-Design Pattern: OODA Loop
+**Design Pattern:** OODA Loop
 
-Target Integration: ROS 2, SpaceROS, Fprime, robotic actuation systems
+**Target Integration:** ROS 2, SpaceROS, Fprime, robotic actuation systems
 
 
 ## Design Rationale
